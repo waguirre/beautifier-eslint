@@ -25,7 +25,7 @@ export const beautifier: Beautifier = {
     },
     {
       type: DependencyType.Node,
-      name: "ESLint-plugin-React",
+      name: "react",
       package: "eslint-plugin-react",
       optional: true,
     },
@@ -59,7 +59,7 @@ export const beautifier: Beautifier = {
     return new Promise<string>((resolve, reject) => {
       const { CLIEngine } = dependencies.get<NodeDependency>("ESLint").package;
       const reactPlugin = dependencies.get<NodeDependency>(
-        "ESLint-plugin-React"
+        "react"
       );
       const config = (beautifierConfig && beautifierConfig.config) || {};
       const { rules, parserOptions, env }: Config = config;
@@ -71,16 +71,21 @@ export const beautifier: Beautifier = {
             };
       const finalOptions =
         rules && Object.keys(rules).length !== 0 ? rules : options;
+      const plugins: string[] = [];
+      if (reactPlugin.isInstalled) {
+        plugins.push(reactPlugin.name);
+      }
       const cliOptions: CLIOptions = {
         fix: true,
         parserOptions: parseOpts,
+        plugins: plugins,
         rules: finalOptions,
       };
       const cli: CLIEngine = new CLIEngine(cliOptions);
       // tslint:disable-next-line:promise-must-complete
-      if (reactPlugin.isInstalled) {
-        cli.addPlugin("eslint-plugin-react", reactPlugin.package);
-      }
+      // if (reactPlugin.isInstalled) {
+      //   cli.addPlugin("eslint-plugin-react", reactPlugin.package);
+      // }
       const report: LintReport = cli.executeOnText(text);
       const result: LintResult = report.results[0];
       if (result.output) {
