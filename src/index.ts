@@ -84,9 +84,9 @@ export const beautifier: Beautifier = {
       };
       const cli: CLIEngine = new CLIEngine(cliOptions);
       // tslint:disable-next-line:promise-must-complete
-      // if (reactPlugin.isInstalled) {
-      //   cli.addPlugin(reactPlugin.name, reactPlugin.package);
-      // }
+      if (reactPlugin.isInstalled) {
+        cli.addPlugin(reactPlugin.name, reactPlugin.package);
+      }
       const report: LintReport = cli.executeOnText(text);
       const result: LintResult = report.results[0];
       if (result.output) {
